@@ -1,35 +1,238 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <title>我的第一个网页</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>瀑布流 Masonry 示例</title>
   <style>
+    :root {
+      --bg: #0b0c0f;
+      --card: #111318;
+      --text: #e7e9ee;
+      --muted: #a6adbb;
+      --ring: #3a7afe33;
+      --gap: 1rem;
+      --radius: 16px;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f7f8fa;
+        --card: #fff;
+        --text: #171717;
+        --muted: #4b5563;
+        --ring: #3b82f622;
+        --shadow: 0 10px 30px rgba(2,6,23,.08);
+      }
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
     body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background-color: #f5f5f5;
-      margin-top: 100px;
+      margin: 0;
+      font: 16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1000px 600px at 50% -10%, #3a7afe11, transparent), var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
-    h1 {
-      color: #333;
+
+    /* 顶部导航（极简风） */
+    .nav {
+      position: sticky; top: 0; z-index: 20;
+      backdrop-filter: saturate(1.2) blur(8px);
+      background: color-mix(in oklab, var(--bg) 85%, transparent);
+      border-bottom: 1px solid color-mix(in oklab, var(--text) 10%, transparent);
     }
-    button {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      font-size: 16px;
-      border-radius: 5px;
-      cursor: pointer;
+    .nav-inner { max-width: 1200px; margin: 0 auto; padding: .8rem 1rem; display: flex; align-items: center; gap: 1rem; }
+    .brand { font-weight: 700; letter-spacing: .2px; }
+    .nav-actions { margin-left: auto; display: flex; gap: .5rem; }
+    .btn {
+      appearance: none; border: 0; border-radius: 999px; padding: .55rem .9rem;
+      background: #3a7afe; color: white; font-weight: 600; cursor: pointer;
+      box-shadow: 0 6px 16px #3a7afe44, inset 0 1px 0 #ffffff33;
     }
-    button:hover {
-      background-color: #45a049;
+    .btn.secondary { background: color-mix(in oklab, var(--card) 80%, #3a7afe); color: var(--text); box-shadow: var(--shadow); }
+    .btn:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
+
+    .hero { max-width: 1200px; margin: 2rem auto 1.25rem; padding: 0 1rem; }
+    .hero h1 { font-size: clamp(1.6rem, 1.1rem + 2vw, 2.4rem); margin: 0 0 .25rem; letter-spacing: .2px; }
+    .hero p { margin: 0; color: var(--muted); }
+
+    /* 瀑布流容器：使用 CSS 多列（columns）实现，简单且兼容性佳 */
+    .masonry {
+      max-width: 1200px; margin: 0 auto; padding: 0 1rem 2rem;
+      column-gap: var(--gap);
     }
+    /* 基于屏幕宽度自适应列数 */
+    @media (min-width: 360px) { .masonry { column-count: 1; } }
+    @media (min-width: 640px) { .masonry { column-count: 2; } }
+    @media (min-width: 920px) { .masonry { column-count: 3; } }
+    @media (min-width: 1200px){ .masonry { column-count: 4; } }
+
+    .card {
+      break-inside: avoid; /* 关键：避免卡片在列间被拆分 */
+      background: var(--card); border-radius: var(--radius); overflow: clip; margin: 0 0 var(--gap);
+      box-shadow: var(--shadow); transform: translateZ(0);
+      outline: 1px solid color-mix(in oklab, var(--text) 8%, transparent);
+    }
+    .card:hover { transform: translateY(-2px); transition: transform .25s ease; }
+
+    .card img { width: 100%; display: block; height: auto; aspect-ratio: 4/3; object-fit: cover; }
+    .content { padding: .9rem .95rem 1rem; }
+    .title { font-weight: 700; margin: 0 0 .35rem; font-size: 1.05rem; }
+    .desc { margin: 0; color: var(--muted); font-size: .95rem; }
+
+    .meta { display: flex; align-items: center; justify-content: space-between; margin-top: .8rem; color: var(--muted); font-size: .85rem; }
+    .pill { border: 1px solid color-mix(in oklab, var(--text) 18%, transparent); border-radius: 999px; padding: .2rem .5rem; }
+
+    .load-more-wrap { text-align: center; margin: 1.25rem 0 2rem; }
+
+    /* 优雅的滚动条（支持的浏览器） */
+    * { scrollbar-width: thin; scrollbar-color: color-mix(in oklab, var(--text) 25%, transparent) transparent; }
+    *::-webkit-scrollbar { height: 10px; width: 10px; }
+    *::-webkit-scrollbar-thumb { border-radius: 999px; background: color-mix(in oklab, var(--text) 25%, transparent); }
   </style>
 </head>
 <body>
-  <h1>欢迎来到我的网页！</h1>
-  <p>这是一个非常简单的网页示例。</p>
-  <button onclick="alert('你好，欢迎学习网页开发！')">点击我</button>
+  <header class="nav" role="banner">
+    <div class="nav-inner">
+      <div class="brand" aria-label="品牌">Masonry Demo</div>
+      <div class="nav-actions">
+        <button class="btn secondary" id="toggleTheme" aria-pressed="false">外观</button>
+        <button class="btn" id="addBatch">加载更多</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1>简洁优雅的瀑布流布局</h1>
+    <p>纯 HTML/CSS/JS，无依赖。响应式自适应列数，适合产品展示、相册或灵感墙。</p>
+  </section>
+
+  <main class="masonry" id="masonry" aria-live="polite">
+    <!-- 初始卡片（示例图片使用 picsum.photos） -->
+  </main>
+
+  <div class="load-more-wrap">
+    <button class="btn" id="loadMoreBottom">加载更多</button>
+  </div>
+
+  <script>
+    // 一些示例数据（标题 + 描述），可替换为实际内容
+    const sampleTitles = [
+      "超视网膜显示",
+      "钛金属外观",
+      "A19 仿生芯片",
+      "Pro 影像系统",
+      "全天电池续航",
+      "陶瓷盾玻璃",
+      "120Hz 自适应刷新",
+      "低光环境优化",
+      "空间音频",
+      "高能效架构"
+    ];
+
+    const sampleDescs = [
+      "细节清晰锐利，色彩准确自然。",
+      "强度与轻盈并存，握持更舒适。",
+      "高性能与低功耗的完美平衡。",
+      "进阶的成像质量与控制力。",
+      "伴你一整天的可靠伙伴。",
+      "坚固耐刮，安心耐用。",
+      "滑动更顺畅，观感更灵动。",
+      "夜色也能拍得漂亮动人。",
+      "沉浸式声场，临场感十足。",
+      "强劲且更节能的底层能力。"
+    ];
+
+    const masonry = document.getElementById('masonry');
+
+    // 生成一张随机尺寸的占位图，形成不同高度以展示瀑布流效果
+    function placeholderImage(seed = Math.floor(Math.random()*10000)) {
+      const w = 600; // 基础宽度，浏览器会等比缩放
+      // 随机高度：400-900 之间
+      const h = 400 + Math.floor(Math.random()*500);
+      return `https://picsum.photos/seed/${seed}/${w}/${h}`;
+    }
+
+    function createCard(i) {
+      const card = document.createElement('article');
+      card.className = 'card';
+      card.tabIndex = 0; // 可聚焦，便于键盘浏览
+
+      const img = document.createElement('img');
+      img.src = placeholderImage(i + Date.now());
+      img.alt = '示例图片';
+      img.loading = 'lazy';
+      img.decoding = 'async';
+
+      const content = document.createElement('div');
+      content.className = 'content';
+
+      const h3 = document.createElement('h3');
+      h3.className = 'title';
+      h3.textContent = sampleTitles[i % sampleTitles.length];
+
+      const p = document.createElement('p');
+      p.className = 'desc';
+      p.textContent = sampleDescs[i % sampleDescs.length];
+
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+      meta.innerHTML = `<span class="pill">#${(i%9)+1}</span><span>阅读 ${(1000 + (i*13))}</span>`;
+
+      content.appendChild(h3);
+      content.appendChild(p);
+      content.appendChild(meta);
+
+      card.appendChild(img);
+      card.appendChild(content);
+      return card;
+    }
+
+    function addBatch(n = 8) {
+      const frag = document.createDocumentFragment();
+      const start = masonry.childElementCount;
+      for (let i = start; i < start + n; i++) {
+        frag.appendChild(createCard(i));
+      }
+      masonry.appendChild(frag);
+    }
+
+    // 顶部/底部两个按钮都可加载
+    document.getElementById('addBatch').addEventListener('click', () => addBatch(8));
+    document.getElementById('loadMoreBottom').addEventListener('click', () => addBatch(8));
+
+    // 进入视口时自动再加载（近似无限滚动）
+    const sentinel = document.createElement('div');
+    sentinel.style.height = '1px';
+    masonry.after(sentinel);
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) addBatch(8);
+      });
+    }, { rootMargin: '600px' });
+    io.observe(sentinel);
+
+    // 外观切换（浅/深色）
+    const toggleBtn = document.getElementById('toggleTheme');
+    let forcedMode = null; // 'light' | 'dark' | null
+    toggleBtn.addEventListener('click', () => {
+      if (!forcedMode) {
+        forcedMode = matchMedia('(prefers-color-scheme: dark)').matches ? 'light' : 'dark';
+      } else if (forcedMode === 'light') {
+        forcedMode = 'dark';
+      } else {
+        forcedMode = null; // 回到系统
+      }
+      document.documentElement.style.colorScheme = forcedMode || 'normal';
+      toggleBtn.setAttribute('aria-pressed', String(!!forcedMode));
+    });
+
+    // 初始化
+    addBatch(12);
+  </script>
 </body>
 </html>
