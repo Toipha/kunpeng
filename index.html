@@ -12,7 +12,7 @@
       background-color: #f0f0f0;
     }
 
-    /* 顶部导航栏样式 */
+    /* 顶部导航栏 */
     nav {
       background-color: #000;
       color: #fff;
@@ -34,7 +34,7 @@
       text-decoration: underline;
     }
 
-    /* 大图轮播样式 */
+    /* 轮播区 */
     .carousel {
       position: relative;
       width: 100%;
@@ -46,125 +46,162 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      animation: slide 12s infinite;
+      animation: slide 4s ease-in-out infinite;
     }
 
     @keyframes slide {
       0% { opacity: 1; }
-      20% { opacity: 1; }
-      40% { opacity: 0; }
+      40% { opacity: 1; }
       60% { opacity: 0; }
       80% { opacity: 1; }
       100% { opacity: 1; }
     }
 
-    /* 主内容 */
+    /* 主体内容 */
     .main-content {
-      padding: 120px 20px 20px; /* 留出顶部导航栏空间 */
+      padding: 120px 20px 20px; 
       text-align: center;
       background-color: #fff;
     }
 
     .main-content h1 {
-      font-size: 2.5rem;
-      margin-bottom: 20px;
+      font-size: 2.3rem;
+      margin-bottom: 15px;
     }
 
     .cards-container {
       display: flex;
       justify-content: center;
-      gap: 20px;
       flex-wrap: wrap;
-      margin-top: 40px;
+      gap: 25px;
+      margin-top: 50px;
+      margin-bottom: 150px;
     }
 
+    /* 卡片样式 */
     .card {
-      background-color: #fff;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      width: 300px;
+      position: relative;
+      width: 300px;  
+      height: 400px; 
       overflow: hidden;
-      text-align: center;
+      border-radius: 10px;
+      text-decoration: none;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
     .card img {
       width: 100%;
-      height: 200px;
+      height: 100%;
       object-fit: cover;
+      transition: transform 0.5s ease;
     }
 
-    .card h3 {
-      font-size: 1.5rem;
-      margin: 20px 0;
+    /* 文字叠加层 */
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.6));
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: flex-start;
+      padding: 20px;
+      opacity: 1;
+      transition: opacity 0.4s ease;
     }
 
-    .card p {
-      padding: 0 15px;
-      color: #555;
+    .overlay h3 {
+      font-size: 1.3rem;
+      margin: 0 0 5px;
+      text-align: left; 
     }
 
-    /* 底部样式 */
+    .overlay p {
+      font-size: 0.9rem;
+      color: #ddd;
+      margin: 0;
+      text-align: left; 
+    }
+
+    /* 悬停效果 */
+    .card:hover img {
+      transform: scale(1.05);
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+    }
+
+    /* 底部 */
     footer {
       background-color: #000;
       color: #fff;
       text-align: center;
-      padding: 15px;
-      position: fixed;
-      bottom: 0;
-      width: 100%;
+      padding: 25px 10px;
+      position: relative; 
     }
   </style>
 </head>
+
 <body>
 
   <!-- 顶部导航栏 -->
   <nav>
-    <a href="https://github.com/Toipha">Github</a>
-    <a href="https://www.linkedin.com/in/kunpeng-xiao-7310b1330/">Linkedin</a>
+    <a href="https://github.com/Toipha">GitHub</a>
+    <a href="https://www.linkedin.com/in/kunpeng-xiao-7310b1330/">LinkedIn</a>
     <a href="https://blog.csdn.net/tiphand?spm=1000.2115.3001.5343">CSDN</a>
   </nav>
 
   <!-- 大图轮播 -->
   <div class="carousel">
-    <img src="https://picsum.photos/1600/900?image=0" alt="汽车1">
-    <img src="https://picsum.photos/1600/900?image=1" alt="汽车2">
-    <img src="https://picsum.photos/1600/900?image=2" alt="汽车3">
+    <img src="resources/Loop/1.jpg" alt="Bild 1" class="slide">
+    <img src="resources/Loop/2.jpg" alt="Bild 2" class="slide">
+    <img src="resources/Loop/3.jpg" alt="Bild 3" class="silde">
   </div>
 
-  <!-- 主内容区 -->
+  <!-- 主内容 -->
   <div class="main-content">
-    <h1>Willkommen auf meiner persönlichen Webseite!</h1>
-    <p>Diese Webseite dient dazu, einige persönliche Informationen zu speichern/anzuzeigen</p>
+    <h1>Willkommen auf Kunpengs Webseite!</h1>
+    <p><b>Diese Webseite dient dazu, einige persönliche Informationen zu speichern und anzuzeigen.</b></p>
+    <p><b>欢迎来到肖坤朋的主页,本网页主要用于记录和展示一些项目经历</b></p>
 
-    <!-- 产品展示卡片 -->
-<!-- 产品展示按钮 -->
-  <div class="cards-container">
-    <a href="google.com" class="card">
-      <img src="https://picsum.photos/300/200?image=3" alt="车型1">
-      <h3>Notenspiegel</h3>
-      <p>Transkript der Leistungen an der HU</p>
-    </a>
-    <a href="google.com" class="card">
-      <img src="https://picsum.photos/300/200?image=4" alt="车型2">
-      <h3>Abgeschlossene Übungen</h3>
-      <p>Einführung in die abgeschlossene Übung</p>
-    </a>
-    <a href="google.com" class="card">
-      <img src="https://picsum.photos/300/200?image=5" alt="车型3">
-      <h3>Andere Projekte</h3>
-      <p>Beschreibung anderer Projekte, die außer universität sind</p>
-    </a>
+    <!-- 卡片区域 -->
+    <div class="cards-container">
+
+      <a href="https://www.google.com/" class="card" target="_blank">
+        <img src="resources/Noten.jpg" alt="Leistung">
+        <div class="overlay">
+          <h3>Notenspiegel</h3>
+          <p>Transkript der Leistungen an der HU</p>
+        </div>
+      </a>
+
+      <a href="https://www.google.com/" class="card" target="_blank">
+        <img src="resources/Uebung.jpg" alt="Übung">
+        <div class="overlay">
+          <h3>Abgeschlossene Übungen</h3>
+          <p>Einführung in die abgeschlossene Übung</p>
+        </div>
+      </a>
+
+      <a href="https://www.google.com/" class="card" target="_blank">
+        <img src="resources/Projekt.png" alt="Projekt">
+        <div class="overlay">
+          <h3>Andere Projekte</h3>
+          <p>Beschreibung anderer Projekte, die außeruniversitär sind</p>
+        </div>
+      </a>
+
+    </div>
   </div>
-
 
   <!-- 底部 -->
-  <!--
-  
-    <footer>
-    <p>&copy; 2025 示例品牌 - 所有权利保留</p>
+  <footer>
+    <p>Persönliche Email: xkunpenggy@gmail.com / kunpeng.xiao@student.hu-berlin.de</p>
   </footer>
-  
-  -->
 
 </body>
 </html>
