@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Werkstudent · Business Development (Fokus AI)</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --pink: #e20074;
+      --white: #ffffff;
+      --black: #000000;
+      --radius: 10px;
+    }
+    body {
+      margin: 0;
+      padding: 60px 10%;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--white);
+      background: var(--black);
+      overflow-x: hidden;
+    }
+    h1 {
+      color: var(--pink);
+      font-size: 2em;
+      margin-bottom: 0.2em;
+    }
+    h2 {
+      color: var(--white);
+      font-size: 1.4em;
+      margin-top: 1.6em;
+    }
+    p {
+      color: var(--white);
+      line-height: 1.6;
+      font-size: 1em;
+    }
+    .section {
+      background: #111;
+      border-radius: var(--radius);
+      padding: 30px;
+      margin-bottom: 40px;
+      box-shadow: 0 2px 10px rgba(255,255,255,0.1);
+    }
+    .subtitle {
+      color: var(--pink);
+      font-weight: bold;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      font-size: 0.9em;
+    }
+    .chart-container {
+      position: relative;
+      height: 400px;
+      width: 100%;
+      margin-top: 30px;
+    }
+    a.pdf-link {
+      display: inline-block;
+      background: var(--pink);
+      color: var(--white);
+      padding: 12px 18px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+    a.pdf-link:hover {
+      background: #ff3b9a;
+    }
+  </style>
+</head>
+<body>
+  <div class="section">
+    <div class="subtitle"></div>
+    <h1>AI Portfolio und Datenvisualisierung Demo fürs Gespräch</h1>
+  </div>
+
+  <div class="section">
+    <h2>AI Portfolio</h2>
+    <p>Zugriffe Analyse Report:</p>
+    <p>
+      <a class="pdf-link" href="server_report_de.pdf" target="_blank">
+        📄 AI Portfolio Report
+      </a>
+    </p>
+  </div>
+
+  <div class="section">
+    <h2>Datenvisualisierung</h2>
+    <p>Visualisierung der Zugriffe Meines Blogs</p>
+    <div class="chart-container">
+      <canvas id="trafficChart"></canvas>
+    </div>
+    <p style="margin-top:40px">Verteilung der durchschnittlichen Zugriffe pro Tagesabschnitt.</p>
+    <div class="chart-container">
+      <canvas id="pieChart"></canvas>
+    </div>
+  </div>
+
+  <script>
+    const ctx = document.getElementById('trafficChart').getContext('2d');
+    const ctxPie = document.getElementById('pieChart').getContext('2d');
+
+    const hours = Array.from({ length: 30 }, (_, i) => `${i}`);
+    let trafficData = hours.map(() => Math.random() * 300 + 100);
+
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(226, 0, 116, 0.8)');
+    gradient.addColorStop(1, 'rgba(226, 0, 116, 0.05)');
+
+    const trafficChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: hours,
+        datasets: [{
+          label: 'Serverzugriffe pro Minute',
+          data: trafficData,
+          fill: true,
+          backgroundColor: gradient,
+          borderColor: '#e20074',
+          tension: 0.5,
+          borderWidth: 3,
+          pointRadius: 0
+        }]
+      },
+      options: {
+        scales: {
+          x: {
+            ticks: { color: '#fff' },
+            grid: { color: '#222' }
+          },
+          y: {
+            ticks: { color: '#fff' },
+            grid: { color: '#222' }
+          }
+        },
+        plugins: {
+          legend: {
+            labels: { color: '#fff', font: { size: 14 } }
+          }
+        },
+        animation: false,
+        responsive: true,
+      }
+    });
+
+    function smoothUpdate() {
+      const newValue = Math.random() * 400 + 50;
+      trafficData.push(newValue);
+      trafficData.shift();
+      trafficChart.data.datasets[0].data = trafficData;
+      trafficChart.update();
+    }
+    setInterval(smoothUpdate, 200);
+
+    const morning = trafficData.slice(0, 8).reduce((a,b)=>a+b,0)/8;
+    const afternoon = trafficData.slice(8,16).reduce((a,b)=>a+b,0)/8;
+    const evening = trafficData.slice(16,24).reduce((a,b)=>a+b,0)/8;
+    const night = trafficData.slice(24).reduce((a,b)=>a+b,0)/(trafficData.length-24);
+
+    const pieChart = new Chart(ctxPie, {
+      type: 'doughnut',
+      data: {
+        labels: ['Morgen', 'Nachmittag', 'Abend', 'Nacht'],
+        datasets: [{
+          label: 'Durchschnittliche Zugriffe',
+          data: [morning, afternoon, evening, night],
+          backgroundColor: [
+            'rgba(226,0,116,0.8)',
+            'rgba(226,0,116,0.6)',
+            'rgba(226,0,116,0.4)',
+            'rgba(226,0,116,0.25)'
+          ],
+          borderColor: '#000',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        plugins: {
+          legend: {
+            labels: { color: '#fff' }
+          }
+        },
+        cutout: '70%',
+        animation: {
+          animateScale: true,
+          animateRotate: true
+        }
+      }
+    });
+  </script>
+</body>
+</html>
