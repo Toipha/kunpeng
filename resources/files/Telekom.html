@@ -68,127 +68,73 @@
     a.pdf-link:hover {
       background: #ff3b9a;
     }
+
+    .video-container {
+      margin-top: 20px;
+    }
+
+    .video-embed {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #000;
+      box-shadow: 0 2px 10px rgba(255,255,255,0.1);
+    }
+
+    .video-embed iframe,
+    .video-embed video {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+    }
+
   </style>
 </head>
 <body>
   <div class="section">
     <div class="subtitle"></div>
-    <h1>AI Portfolio und Datenvisualisierung Demo fürs Gespräch</h1>
+    <h1>Research stage presentation (EBM)</h1>
   </div>
 
   <div class="section">
-    <h2>AI Portfolio</h2>
-    <p>Zugriffe Analyse Report:</p>
-    <p>
-      <a class="pdf-link" href="server_report_de.pdf" target="_blank">
-        📄 AI Portfolio Report
-      </a>
+    <h2>Input and Output</h2>
+    <p>Input 1:"I am a student and rent an apartment in Neonwood, 
+                for next semester I would like to continue my contract with the landlord 
+                in this case, will I get my deposit back, and give it again to the landlord? 
+                Or I will not receive back my deposit for the current contract because it would be conveyed 
+                to the new contract? Plz respond shortly and with references" 
     </p>
+    <p>Input 2: My personal rent contract
+
+    </p>
+    <p>Output (BY phi3):
+       According to the provided context on pages p.2, your deposit will not automatically transfer back into a new contract if you choose to renew for another semester without explicitly stating reasons in writing as per § 21 Schlussbestimmungen (p.2). The return of the full amount is contingent upon fulfilling all obligations and conditions at the end of your current lease, not just its continuation or cancellation [p.2]. Therefore, if you do extend your stay within Neon Wood as a student without stating reasons for terminating your contract (as per § 21), it is likely that no further deposit will be returned to you at this time. Always check the specific terms and consult directly with Cresco Immobilien Verwaltungs GmbH or reference their policies on lease renewals to understand how the process works in detail [p.2].
+    </p>
+
   </div>
 
-  <div class="section">
-    <h2>Datenvisualisierung</h2>
-    <p>Visualisierung der Zugriffe Meines Blogs</p>
-    <div class="chart-container">
-      <canvas id="trafficChart"></canvas>
-    </div>
-    <p style="margin-top:40px">Verteilung der durchschnittlichen Zugriffe pro Tagesabschnitt.</p>
-    <div class="chart-container">
-      <canvas id="pieChart"></canvas>
+  <div class="video-container">
+    <div class="video-embed">
+      <video controls preload="metadata" playsinline>
+      <source src="EBM.mp4" type="video/mp4" />
+      Dein Browser unterstützt das Video-Tag nicht.
+      </video>
     </div>
   </div>
 
-  <script>
-    const ctx = document.getElementById('trafficChart').getContext('2d');
-    const ctxPie = document.getElementById('pieChart').getContext('2d');
+<div class="section">
+  <h2>Manuelly processed KG experiment</h2>
+  <p>KG + RAG + GPT</p >
 
-    const hours = Array.from({ length: 30 }, (_, i) => `${i}`);
-    let trafficData = hours.map(() => Math.random() * 300 + 100);
+  <a class="pdf-link"
+     href="https://chatgpt.com/share/695ebac1-15cc-8011-b00b-d3b9d8ae1882"
+     target="_blank"
+     rel="noopener noreferrer">
+    Open ChatGPT Share Link
+  </a >
+</div>
 
-    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-    gradient.addColorStop(0, 'rgba(226, 0, 116, 0.8)');
-    gradient.addColorStop(1, 'rgba(226, 0, 116, 0.05)');
-
-    const trafficChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: hours,
-        datasets: [{
-          label: 'Serverzugriffe pro Minute',
-          data: trafficData,
-          fill: true,
-          backgroundColor: gradient,
-          borderColor: '#e20074',
-          tension: 0.5,
-          borderWidth: 3,
-          pointRadius: 0
-        }]
-      },
-      options: {
-        scales: {
-          x: {
-            ticks: { color: '#fff' },
-            grid: { color: '#222' }
-          },
-          y: {
-            ticks: { color: '#fff' },
-            grid: { color: '#222' }
-          }
-        },
-        plugins: {
-          legend: {
-            labels: { color: '#fff', font: { size: 14 } }
-          }
-        },
-        animation: false,
-        responsive: true,
-      }
-    });
-
-    function smoothUpdate() {
-      const newValue = Math.random() * 400 + 50;
-      trafficData.push(newValue);
-      trafficData.shift();
-      trafficChart.data.datasets[0].data = trafficData;
-      trafficChart.update();
-    }
-    setInterval(smoothUpdate, 200);
-
-    const morning = trafficData.slice(0, 8).reduce((a,b)=>a+b,0)/8;
-    const afternoon = trafficData.slice(8,16).reduce((a,b)=>a+b,0)/8;
-    const evening = trafficData.slice(16,24).reduce((a,b)=>a+b,0)/8;
-    const night = trafficData.slice(24).reduce((a,b)=>a+b,0)/(trafficData.length-24);
-
-    const pieChart = new Chart(ctxPie, {
-      type: 'doughnut',
-      data: {
-        labels: ['Morgen', 'Nachmittag', 'Abend', 'Nacht'],
-        datasets: [{
-          label: 'Durchschnittliche Zugriffe',
-          data: [morning, afternoon, evening, night],
-          backgroundColor: [
-            'rgba(226,0,116,0.8)',
-            'rgba(226,0,116,0.6)',
-            'rgba(226,0,116,0.4)',
-            'rgba(226,0,116,0.25)'
-          ],
-          borderColor: '#000',
-          borderWidth: 1
-        }]
-      },
-      options: {
-        plugins: {
-          legend: {
-            labels: { color: '#fff' }
-          }
-        },
-        cutout: '70%',
-        animation: {
-          animateScale: true,
-          animateRotate: true
-        }
-      }
-    });
-  </script>
 </body>
 </html>
